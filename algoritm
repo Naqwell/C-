@@ -1,0 +1,114 @@
+public class Decoders
+{
+    private string[] _original;
+    private string[] _restored;
+
+    public Decoders(string path)
+    {
+        RideFile(path);
+    }
+
+    public void Decode()
+    {
+        _restored = DecodeString();
+        
+        foreach (string text in _restored) 
+        File.AppendAllText("DecodeFile.txt", text+ "\n");
+    }
+
+    private void RideFile(string path)
+    {
+        _original = File.ReadAllLines(path);
+    }
+
+    private string[] DecodeString()
+    {
+        string[] decodeString = new string[_original.Length];
+        int number;
+        int countChar = 0;
+        string symbol = "";
+
+        for (int i = 0; i < _original.Length; i++)
+        {
+            symbol = "";
+            symbol += _original[i]+ _original[i+1];
+
+            if (int.TryParse(symbol, out number))
+            {
+                countChar = number;
+            }
+            else
+            {
+                symbol += _original[i];
+                if(int.TryParse(symbol, out number))
+                {
+                    countChar = number;
+                }
+                decodeString[i] += symbol;
+            }
+        }
+
+        return decodeString;
+    }
+}
+////////////////////////////////////////////////////////////////////
+public class Encoders
+{
+    private string[] _original;
+    private string[] _compressed;
+
+    public Encoders(string path)
+    {
+        RideFile(path);
+    }
+
+    public void Compression()
+    {
+        _compressed = CompressionString();
+
+        foreach (string text in _compressed)
+        File.AppendAllText("print.txt", text+"\n");
+    }
+
+    private void RideFile(string path)
+    {
+        _original = File.ReadAllLines(path);
+    }
+
+    private string[] CompressionString()
+    {   
+        string[] compressionString = new string[_original.Length];
+        string stringFile;
+        int countChar = 0;
+        char symbol = '0';
+
+        for (int i = 0; i < _original.Length - 1; i++)
+        {
+            stringFile = "";
+            countChar = 1;
+            for (int j = 0; j < _original[i].Length - 1; j++)
+            {
+                if (_original[i][j] == _original[i][j + 1])
+                    countChar++;
+                else
+                    stringFile += $"{countChar}{symbol}";
+            }
+            compressionString[i] = stringFile;
+        }
+
+
+        return compressionString;
+    }
+}
+/////////////////////////////////////////////////////////////////////////////
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        Encoders encoder = new Encoders ("Text.txt");
+        encoder.Compression();
+        Decoders decoder = new Decoders("CompressionFile.txt");
+        decoder.Decode();
+    }
+}
