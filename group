@@ -1,0 +1,178 @@
+ internal class Program
+ {
+     static void Main(string[] args)
+     {
+         Manadment manager = new Manadment();
+
+
+         manager.PrintMenu();
+     }
+ }
+ class Student
+ {
+     
+     private string[] _nemesFilse = new string[1];
+     public Student(int id, string name, string familyname, int age)
+     {
+         Id = id;
+         Name = name;
+         Familyname = familyname;
+         Age = age;
+         _nemesFilse[0] = NameFile; 
+
+         
+             CreateLine();
+       
+     }
+
+     public int Id { get; private set; }
+
+     public string Name { get; private set; }
+
+     public string Familyname { get; private set; }
+
+     public int Age { get; private set; }
+     public string NameFile {  get; private set; }
+
+   
+
+     private void CreateLine()
+     {
+         string nameBase = Comand.nameBase;
+         string[] textFile = new string[1];
+         textFile[0] =$" {Familyname} {Age} {Name}";
+         
+
+         
+         File.AppendAllLines(nameBase, textFile);
+     }
+
+ }
+ class Manadment
+ {
+     const string ComandAddStuden = "1";
+     const string ComandRemoveStuden = "2";
+     const string ComandPrint = "3";
+
+     private string _titleFileBasa = "basa.txt";
+
+
+     private List<Student> _students = new List<Student>();
+     private string [] _titleFile = new string[0];
+     public void PrintMenu()
+     {
+         RestoreDatabasa();
+
+         bool isStart = true;
+
+         while (isStart)
+         {
+             Console.Clear();
+
+             Console.WriteLine("здраствуйте  ");
+             Print();
+             Console.WriteLine($"Добавить студента{ComandAddStuden}");
+             Console.WriteLine($" удалить студента{ComandRemoveStuden}");
+             Console.WriteLine($" раcпечатать {ComandPrint}");
+             string command = Console.ReadLine();
+
+             switch (command)
+             {
+                 case ComandAddStuden:
+                     AddStudent();
+                     break;
+                 case ComandRemoveStuden:
+                     DeleteStedent();
+                     break;
+                 case ComandPrint:
+                     Print();
+                     break;
+                 default:
+                     Console.WriteLine("вы ввели не корректную команду");
+                     break;
+
+             }
+         }
+     }
+
+
+     private void AddStudent()
+     {
+         int id = _students.Count;
+         string name;
+         string familyname;
+         int age;
+
+         Console.WriteLine("введите имя ");
+         name = Console.ReadLine();
+         Console.WriteLine("введите фамилия ");
+         familyname = Console.ReadLine();
+         Console.WriteLine("введите возраст");
+         age = InputNumber();
+         _students.Add(new Student(id, name, familyname, age));  
+     }
+
+     private int InputNumber()
+     {
+         int number = 0;
+         bool isDialed = true;
+         while (isDialed)
+         {
+             if (int.TryParse(Console.ReadLine(), out number))
+                 isDialed = false;
+             else
+                 Console.WriteLine("вы ввели  некоректную команду");
+         }
+
+         return number;
+
+     }
+     private void DeleteStedent()
+     {
+         int id ;
+
+         Console.WriteLine(":");
+         id = InputNumber()-1;
+         File.Delete(_students[id].NameFile);
+         //Comand.RemoveLineFile(_students[id].NameFile);
+
+         _students.RemoveAt(id);
+     }
+
+     private void Print()
+     {
+         Console.WriteLine();
+
+         for (int i = 0; i < _students.Count;i++)
+             Console.WriteLine($"{i + 1} студент -{_students[i].Name} {_students[i].Familyname}{_students[i].Age}{_students[i].Id}");
+
+
+
+     }
+     private void RestoreDatabasa()
+     {
+         
+         string[] infoStudent;
+        
+         if (File.Exists(Comand.nameBase))
+         {
+             _titleFile = File.ReadAllLines(Comand.nameBase);
+
+             for(int i = 0; i < _titleFile.Length; i++)
+             {
+                 if (File.Exists(_titleFile[i]))
+                 {
+                     infoStudent = File.ReadAllLines(_titleFile[i]);
+                     _students.Add(new Student(Convert.ToInt32(infoStudent[Comand.InfoId]), 
+                                                               infoStudent[Comand.InfoName], 
+                                                               infoStudent[Comand.InfoFamilyname], 
+                                                               Convert.ToInt32(infoStudent[Comand.InfoAge])));
+                 }
+             }
+         }
+     }
+
+
+
+
+ }
