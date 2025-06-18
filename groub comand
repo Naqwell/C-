@@ -1,0 +1,13 @@
+ internal static class Comand
+ {
+    
+     public const string nameBase = "base.txt";
+     public const string InfoStudent = "cстудент";
+     public const int InfoName = 0;
+     public const int InfoFamilyname = 1;
+     public const int InfoAge = 2;
+     public const int InfoId = 3;
+
+     
+    
+ }
