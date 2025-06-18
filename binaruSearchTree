@@ -1,0 +1,293 @@
+     internal class UserServer
+    {
+        private const string CommandAddNote = "1";
+        private const string CommandRemoveNote = "2";
+        private const string CommandPrintNote = "3";
+        private const string CommandFindNote = "4";
+        private const string CommandExitNote = "5";
+
+        private Tree _tree;
+        public UserServer() 
+        {
+            _tree = new Tree();
+        }
+
+        public void Start()
+        {
+            bool isStart = true;
+            string userCommand;
+
+            while (isStart)
+            {
+                Console.Clear();
+                Console.WriteLine("Welcome to the tree");
+                Console.WriteLine($"to add a new entry, enter{CommandAddNote}");
+                Console.WriteLine($"to delete, enter{CommandRemoveNote}");
+                Console.WriteLine($"to print the record, enter{CommandPrintNote}");
+                Console.WriteLine($"to search for an entry, enter{CommandFindNote}");
+                Console.WriteLine($"to exit, enter{CommandExitNote}");
+                Console.Write("Enter");
+                userCommand = Console.ReadLine();
+
+                switch(userCommand )
+                {
+                    case CommandAddNote:
+                        Add();
+                        break;
+                    case CommandRemoveNote:
+                        Remuve();
+                        break;
+                    case CommandPrintNote:
+                        PrinteNotes();
+                        break;
+                    case CommandFindNote:
+                        break;
+                    case CommandExitNote:
+                        isStart = false;
+                        break;
+                    default:
+                        Console.WriteLine("you entered an incorrect command");
+                        break;
+                }
+            }
+
+        }
+
+        public void Add()
+        {
+            bool isDontInputNumber = true;
+            int number = 0;
+            string text;
+
+            while (isDontInputNumber)
+            {
+                Console.WriteLine("enter a number");
+                text = Console.ReadLine();
+
+                if(int.TryParse(text, out number))
+                    isDontInputNumber = false;
+                else
+                    Console.WriteLine("enter a not number!");
+            }
+
+            _tree.AcceptNote(number);
+        }
+
+        private void Remuve()
+        {
+            int number = 0;
+            string text;
+
+            Console.WriteLine("you deletet element");
+            text= Console.ReadLine();
+
+            if (int.TryParse(text,out number))
+                _tree.RemuveNote(number);
+            else
+                Console.WriteLine("you enter a not number");
+        }
+
+        public List<string> PrinteNotes()
+        {
+            List<string> textNotes = new List<string>();
+
+
+            return textNotes;
+        }
+
+        private void PrintNote()
+        {
+            List<string> tekstNotes;
+            tekstNotes = new List<string>();
+
+            Console.WriteLine();
+            foreach (string note in tekstNotes )
+                Console.WriteLine(note);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+    public class Note
+    {
+        public Note SheetLeft;
+        public Note SheetRight;
+
+        public Note(int id, int number)
+        {
+            Id = id;
+            Number = number;
+            SheetLeft = null;
+            SheetRight = null;
+        }
+
+        public int Id { get; private set; }
+
+        public int Number { get; private set; }
+
+        public void AcceptNote(Note note)
+        {
+            if (Number > note.Number)
+            {
+                IsAcceptNote(SheetLeft, note);
+            }
+            else
+            {
+                IsAcceptNote(SheetRight, note);
+            }
+
+        }
+
+        public void Remuve(int number)
+        {
+           if(number == SheetLeft.Number)
+            {
+
+                if (SheetLeft.IsAvailabilityDerivatives())
+                {
+                    Id = SheetLeft.Id;
+                    Number = SheetLeft.Number;
+                    SheetLeft = null;
+                } 
+            }
+
+           if(number == SheetRight.Number)
+            {
+                Id =SheetRight.Id;
+                Number = SheetRight.Number;
+                SheetRight = null;
+            }
+
+           if(number < Number)
+                SheetLeft.Remuve(number);
+           else
+                SheetRight.Remuve(number);
+        }
+
+
+        public bool IsAvailabilityDerivatives()
+        {
+            if(SheetLeft == null && SheetRight == null)
+                return true;
+            return false;
+        }
+
+        public int GetMinNumberNotes()
+        {
+            int minNomber = 0;
+
+            if (SheetLeft == null)
+                minNomber = Number;
+            else
+                minNomber = SheetLeft.GetMinNumberNotes();
+
+            return minNomber;
+        }
+        private void IsAcceptNote(Note oldNote, Note newNote)
+        {
+            if (oldNote == null)
+                oldNote = newNote;
+            else
+                oldNote.AcceptNote(newNote);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+    internal class Tree
+    {
+        private List<Note> _notes;
+        private List<Note> _clipboard;
+        private int _idRoot;
+
+        public Tree()
+        {
+            _notes = new List<Note>();
+            _clipboard = new List<Note>();
+            _idRoot = 0;
+        }
+
+       
+        public void AcceptNote(int number)
+        {
+            if (_notes.Count == _idRoot)
+            {
+                _notes.Add(new Note(_idRoot, number));
+            }
+            else
+            {
+                _notes.Add(new Note(_notes.Count, number));
+                _notes[_notes.Count - 2].AcceptNote(_notes[_notes.Count - 1]);
+            }
+        
+        }
+
+        public void RemuveNote(int number)
+        {
+            Note noteRemuve = null;
+
+            foreach (Note note in _notes)
+            {
+                if(note.Number == number)
+                {
+                    noteRemuve = note;
+                    break;
+                }
+            }
+            if (noteRemuve != null)
+            {
+                _notes[_idRoot].Remuve(number);
+                _notes.Remove(noteRemuve);
+            }
+            else
+            {
+                Console.WriteLine("there is no such element");
+            }
+        }
+
+        public List<string> GetListNotes()
+        {
+            List<string> textNotes = new List<string>();
+            List<int> numbers = new List<int>();
+
+            foreach(Note note in _notes)
+                numbers.Add(note.Number);
+
+            numbers.Sort();
+
+            foreach (int number in numbers)
+                textNotes.Add($"{textNotes.Count + 1} значение - {number}");
+            return textNotes;
+        }
+    }
+}
+
+
+
+
+
+
+ internal class Program
+ {
+     static void Main(string[] args)
+     {
+         UserServer server = new UserServer();
+         server.Start();
+     }
+ }
