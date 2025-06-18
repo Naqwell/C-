@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        List<int> numbers = new List<int>();
+        string command;
+
+        while (true)
+        {
+            Console.WriteLine("Введите число для добавления или команду (удалить, выход):");
+            command = Console.ReadLine()?.ToLower();
+
+            if (int.TryParse(command, out int number))
+            {
+                numbers.Add(number);
+                Console.WriteLine("Число добавлено.");
+            }
+            else
+            {
+                switch (command)
+                {
+                    case "удалить":
+                        RemoveNumber(numbers);
+                        break;
+                    case "выход":
+                        return;
+                    default:
+                        Console.WriteLine("Неизвестная команда.");
+                        break;
+                }
+            }
+        }
+    }
+
+    static void RemoveNumber(List<int> numbers)
+    {
+        Console.WriteLine("Введите число для удаления:");
+        if (int.TryParse(Console.ReadLine(), out int number))
+        {
+            if (numbers.Remove(number))
+            {
+                Console.WriteLine("Число удалено.");
+            }
+            else
+            {
+                Console.WriteLine("Число не найдено.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Некорректный ввод.");
+        }
+    }
+}
